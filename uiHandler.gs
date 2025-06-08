@@ -13,7 +13,7 @@ function onInstall(e) {
 function showSettingsSidebar() {
   const html = HtmlService
     .createHtmlOutputFromFile('sidebarComponent')
-    .setTitle('SEO AI Settings');
+    .setTitle('VibeSheet Magic - Brutal Build 😈');
   SpreadsheetApp.getUi().showSidebar(html);
   openFunctionReferenceSheet();
 }

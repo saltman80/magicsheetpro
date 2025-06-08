@@ -5,14 +5,70 @@
   <base target="_top">
   <meta charset="UTF-8">
   <style>
-    body { background-color: #2b2b2b; color: #ecf0f1; font-family: Arial, sans-serif; padding: 16px; }
-    label { display: block; margin-bottom: 4px; color: #9b59b6; font-weight: bold; }
-    input, select { background-color: #3c3c3c; color: #ecf0f1; border: 1px solid #2ecc71; border-radius: 3px; padding: 6px; width: 100%; box-sizing: border-box; margin-bottom: 12px; }
-    button { background-color: #8e44ad; color: #ecf0f1; border: 1px solid #2ecc71; border-radius: 3px; padding: 6px 12px; cursor: pointer; margin-right: 6px; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    button:hover:not(:disabled) { background-color: #2ecc71; color: #2b2b2b; }
-    #loader { display: flex; align-items: center; margin-top: 12px; }
-    .spinner { border: 4px solid #3c3c3c; border-top: 4px solid #2ecc71; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; margin-right: 8px; }
+    body {
+      background: linear-gradient(#1a1a1a, #2b2b2b);
+      color: #ecf0f1;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      padding: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      color: #9b59b6;
+      font-weight: bold;
+    }
+    input, select {
+      background-color: #3c3c3c;
+      color: #ecf0f1;
+      border: 1px solid #2ecc71;
+      border-radius: 4px;
+      padding: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+    button {
+      background-color: #8e44ad;
+      color: #ecf0f1;
+      border: 1px solid #2ecc71;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      margin-right: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #2ecc71;
+      color: #2b2b2b;
+    }
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+    }
+    #loader[hidden] {
+      display: none;
+    }
+    .spinner {
+      border: 4px solid #9b59b6;
+      border-top: 4px solid #2ecc71;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #statusMessage { margin-top: 12px; min-height: 1em; }
     #currentModelDisplay {
@@ -23,9 +79,15 @@
       border: 1px solid #2ecc71;
       border-radius: 3px;
     }
+    #sidebarTitle {
+      text-align: center;
+      color: #9b59b6;
+      margin: 0 0 16px;
+    }
   </style>
 </head>
 <body role="region" aria-label="SEO AI Tools Settings">
+  <h1 id="sidebarTitle">VibeSheet Magic - Brutal Build 😈</h1>
   <label for="apiKeyInput">OpenAI API Key</label>
   <input type="password" id="apiKeyInput" aria-required="true" />
   <button id="saveApiKeyBtn">Save API Key</button>
