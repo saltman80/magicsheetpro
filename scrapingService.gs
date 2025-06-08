@@ -72,7 +72,7 @@ function serp(query, count) {
   if (!query || typeof query !== 'string') throw new Error('Query must be a non-empty string');
   const num = count == null ? 10 : parseInt(count, 10);
   if (isNaN(num) || num < 1) throw new Error('Count must be a positive integer');
-  const url = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(query);
+  const url = 'https://duckduckgo.com/?t=h_&q=' + encodeURIComponent(query);
   const html = _fetchUrl(url).content;
   return _parseSerp(html, num);
 }
