@@ -5,6 +5,7 @@ MagicSheetPro is a standalone Google Apps Script project designed to run alongsi
 ## Features
 
 - **SEO AI Tools menu** – Adds a custom menu when the spreadsheet opens. From here you can launch a dark themed sidebar for configuration.
+- **Welcome sheet** – Automatically opens a dark gray welcome page with setup instructions.
 - **Sidebar UI** – Enter and save your OpenAI API key, fetch available models and choose one for all AI calls. Settings are stored via `PropertiesService`.
 - **OpenAI integration** – Uses `UrlFetchApp` for all HTTP requests. `aiService.gs` implements `AI_OpenAI` and helper functions for text and list generation.
 - **Scraping utilities** – DuckDuckGo SERP scraping, page metadata extraction and content helpers implemented in `scrapingService.gs`, `scrapingMetaService.gs` and `scrapingContentService.gs`.
@@ -29,10 +30,11 @@ domainService.gs          – Domain and URL validation helpers
 
 1. Create or open a Google Sheet named **"Magic Pro Sheet"**.
 2. Deploy these script files in the Script Editor (or push them with [clasp](https://github.com/google/clasp)).
-3. Reload the spreadsheet. A **"SEO AI Tools"** menu will appear.
-4. Choose **Settings** from the menu to open the sidebar.
-5. Enter your OpenAI API key and click **Save API Key**.
-6. Click **Fetch Models** to retrieve the list of available OpenAI models, select one and **Save Model**.
+3. Reload the spreadsheet. A dark welcome sheet appears explaining setup steps.
+4. A **"SEO AI Tools"** menu will also appear.
+5. Choose **Settings** from the menu to open the sidebar.
+6. Enter your OpenAI API key and click **Save API Key**.
+7. Click **Fetch Models** to retrieve the list of available OpenAI models, select one and **Save Model**.
 
 All preferences persist between uses thanks to `PropertiesService`. The script performs network calls exclusively via `UrlFetchApp`.
 
