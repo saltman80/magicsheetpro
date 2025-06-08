@@ -1,42 +1,48 @@
-function assertValidString(value, name) {
-  if (typeof value !== 'string' || !value.trim()) {
-    throw new Error(`${name} must be a non-empty string.`);
-  }
-}
+const BASE_FETCH_OPTIONS = {
+  muteHttpExceptions: true,
+  followRedirects: true
+};
 
 /**
- * Normalize a URL by ensuring it has a valid HTTP(S) protocol.
- * @private
+ * Normalizes and validates a URL string.
+ *
+ * Ensures that the URL has a protocol and is properly encoded.
+ *
  * @param {string} url The URL to normalize.
- * @returns {string} The normalized URL string.
- * @throws {Error} If the URL is invalid or uses a non-HTTP(S) protocol.
+ * @return {string} The normalized URL.
+ * @throws {Error} If the input is missing or invalid.
  */
 function normalizeUrl(url) {
-  assertValidString(url, 'URL');
-  let trimmed = url.trim();
-  if (!/^https?:\/\//i.test(trimmed)) {
-    trimmed = 'https://' + trimmed;
+  if (!url) {
+    throw new Error('normalizeUrl: Missing URL input.');
   }
+  const str = url.toString().trim();
+  const withProtocol = /^https?:\/\//i.test(str) ? str : 'http://' + str;
   let urlObj;
   try {
-    urlObj = new URL(trimmed);
+    urlObj = new URL(withProtocol);
   } catch (e) {
-    throw new Error('Invalid URL format.');
+    throw new Error('normalizeUrl: Invalid URL format. ' + e.message);
   }
-  if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
-    throw new Error('URL must use http or https protocol.');
-  }
-  return urlObj.toString();
+  return urlObj.href;
 }
 
 /**
- * Checks if a URL string is a valid HTTP(S) URL.
+ * Validates whether a string is a properly formatted HTTP/HTTPS URL.
+ *
  * @param {string} url The URL to validate.
- * @returns {boolean} True if the URL is valid, false otherwise.
+ * @return {boolean} True if the URL is valid and uses HTTP/HTTPS protocol.
  */
 function isValidUrl(url) {
+  if (typeof url !== 'string' || !url.trim()) {
+    return false;
+  }
+  const trimmed = url.trim();
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return false;
+  }
   try {
-    normalizeUrl(url);
+    new URL(trimmed);
     return true;
   } catch (e) {
     return false;
@@ -44,46 +50,106 @@ function isValidUrl(url) {
 }
 
 /**
- * Retrieves the HTTP status code for a URL. Attempts a HEAD request first,
- * and falls back to GET if the server returns 405 Method Not Allowed.
+ * Checks if the given URL is reachable by performing a GET request
+ * and evaluating the HTTP status code (< 400).
+ *
  * @param {string} url The URL to check.
- * @returns {number} The HTTP status code.
- * @throws {Error} If fetching the URL fails.
+ * @return {boolean} True if reachable (status < 400), false otherwise.
+ * @throws {Error} If the input is missing.
  */
-function getHttpStatus(url) {
-  assertValidString(url, 'URL');
-  const normalized = normalizeUrl(url);
-  const optionsHead = {
-    method: 'head',
-    muteHttpExceptions: true
-  };
-  let response = UrlFetchApp.fetch(normalized, optionsHead);
-  let code = response.getResponseCode();
-  if (code === 405) {
-    const optionsGet = {
-      method: 'get',
-      muteHttpExceptions: true
-    };
-    response = UrlFetchApp.fetch(normalized, optionsGet);
-    code = response.getResponseCode();
+function domainCheck(url) {
+  if (!url) {
+    throw new Error('domainCheck: Missing URL input.');
   }
-  return code;
+  const normalized = normalizeUrl(url);
+  const options = { ...BASE_FETCH_OPTIONS, method: 'get' };
+  try {
+    const response = UrlFetchApp.fetch(normalized, options);
+    return response.getResponseCode() < 400;
+  } catch (e) {
+    return false;
+  }
 }
 
 /**
- * Checks if the domain (URL) is reachable with a status code less than 400.
- * @param {string} url The URL to check.
- * @returns {boolean} True if the URL response code is less than 400, false otherwise.
+ * Retrieves the HTTP status code for a given URL.
+ *
+ * @param {string} url The URL to fetch.
+ * @return {number} HTTP status code.
+ * @throws {Error} If the input is missing or the request fails.
  */
-function domainCheck(url) {
-  if (!isValidUrl(url)) {
-    return false;
+function getHttpStatus(url) {
+  if (!url) {
+    throw new Error('getHttpStatus: Missing URL input.');
   }
+  let normalized;
   try {
-    const code = getHttpStatus(url);
-    return code < 400;
+    normalized = normalizeUrl(url);
   } catch (e) {
-    Logger.warn('domainCheck failed for URL "' + url + '": ' + e);
+    throw new Error('getHttpStatus: ' + e.message);
+  }
+  const options = { ...BASE_FETCH_OPTIONS, method: 'get' };
+  try {
+    const response = UrlFetchApp.fetch(normalized, options);
+    return response.getResponseCode();
+  } catch (e) {
+    throw new Error('getHttpStatus: Failed to fetch URL. ' + e.message);
+  }
+}
+
+/**
+ * Measures the response time (in milliseconds) of a URL by performing
+ * a GET request and timing the round trip.
+ *
+ * @param {string} url The URL to test.
+ * @return {number} Response time in milliseconds.
+ * @throws {Error} If the input is missing or the request fails.
+ */
+function getDomainResponseTime(url) {
+  if (!url) {
+    throw new Error('getDomainResponseTime: Missing URL input.');
+  }
+  let normalized;
+  try {
+    normalized = normalizeUrl(url);
+  } catch (e) {
+    throw new Error('getDomainResponseTime: ' + e.message);
+  }
+  const options = { ...BASE_FETCH_OPTIONS, method: 'get' };
+  const start = Date.now();
+  try {
+    UrlFetchApp.fetch(normalized, options);
+    return Date.now() - start;
+  } catch (e) {
+    throw new Error('getDomainResponseTime: Failed to fetch URL. ' + e.message);
+  }
+}
+
+/**
+ * Checks if a domain supports HTTPS (SSL/TLS) by attempting
+ * a GET request over HTTPS and evaluating the status code (200?399).
+ *
+ * @param {string} url The URL to check.
+ * @return {boolean} True if HTTPS is supported, false otherwise.
+ * @throws {Error} If the input is missing.
+ */
+function checkDomainSSL(url) {
+  if (!url) {
+    throw new Error('checkDomainSSL: Missing URL input.');
+  }
+  let normalized;
+  try {
+    normalized = normalizeUrl(url);
+  } catch (e) {
+    throw new Error('checkDomainSSL: ' + e.message);
+  }
+  const httpsUrl = normalized.replace(/^http:\/\//i, 'https://');
+  const options = { ...BASE_FETCH_OPTIONS, method: 'get' };
+  try {
+    const response = UrlFetchApp.fetch(httpsUrl, options);
+    const code = response.getResponseCode();
+    return code >= 200 && code < 400;
+  } catch (e) {
     return false;
   }
 }
