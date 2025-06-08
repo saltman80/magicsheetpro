@@ -104,3 +104,11 @@ function parseHtml(html) {
     throw new Error('Failed to parse HTML: ' + e.message);
   }
 }
+
+var utilityService = {
+  updateProperty: updateProperty,
+  getProperty: getProperty,
+  removeProperty: removeProperty,
+  handleBillingError: handleBillingError,
+  parseHtml: parseHtml
+};

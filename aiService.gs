@@ -99,3 +99,10 @@ function ailisth(prompt) {
     .filter(function(s){ return s; });
   return [items];
 }
+
+var aiService = {
+  AI_OpenAI: AI_OpenAI,
+  aitext: aitext,
+  ailist: ailist,
+  ailisth: ailisth
+};
