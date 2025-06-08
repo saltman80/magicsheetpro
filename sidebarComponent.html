@@ -15,6 +15,14 @@
     .spinner { border: 4px solid #3c3c3c; border-top: 4px solid #2ecc71; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; margin-right: 8px; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     #statusMessage { margin-top: 12px; min-height: 1em; }
+    #currentModelDisplay {
+      margin-top: 12px;
+      padding: 6px;
+      background-color: #3c3c3c;
+      color: #2ecc71;
+      border: 1px solid #2ecc71;
+      border-radius: 3px;
+    }
   </style>
 </head>
 <body role="region" aria-label="SEO AI Tools Settings">
@@ -26,6 +34,7 @@
   <label for="modelDropdown">Select Model</label>
   <select id="modelDropdown" aria-disabled="true"></select>
   <button id="saveModelBtn">Save Model</button>
+  <div id="currentModelDisplay"></div>
 
   <div id="loader" role="status" aria-live="polite" hidden>
     <div class="spinner"></div>
@@ -40,6 +49,7 @@
       var fetchModelsBtn = document.getElementById('fetchModelsBtn');
       var modelDropdown = document.getElementById('modelDropdown');
       var saveModelBtn = document.getElementById('saveModelBtn');
+      var currentModelDisplay = document.getElementById('currentModelDisplay');
       var loader = document.getElementById('loader');
       var statusMessage = document.getElementById('statusMessage');
 
@@ -50,6 +60,33 @@
       function setStatus(msg, isError) {
         statusMessage.textContent = msg;
         statusMessage.style.color = isError ? '#e74c3c' : '#2ecc71';
+      }
+      function updateModelDisplay(model) {
+        if (model) {
+          currentModelDisplay.textContent = 'Current Model: ' + model;
+        } else {
+          currentModelDisplay.textContent = 'Current Model: none';
+        }
+      }
+      function saveModel(modelId) {
+        if (!modelId) { return; }
+        saveModelBtn.disabled = true;
+        setLoading(true);
+        setStatus('');
+        google.script.run
+          .withSuccessHandler(function() {
+            setLoading(false);
+            setStatus('Model saved successfully');
+            updateModelDisplay(modelId);
+            alert('Model set to: ' + modelId);
+            saveModelBtn.disabled = false;
+          })
+          .withFailureHandler(function(err) {
+            setLoading(false);
+            setStatus('Error saving model: ' + err.message, true);
+            saveModelBtn.disabled = false;
+          })
+          .settingsService.setModel(modelId);
       }
       function validateApiKey() {
         return apiKeyInput.value.trim().length > 0;
@@ -63,6 +100,21 @@
 
       apiKeyInput.addEventListener('input', updateControls);
       updateControls();
+
+      google.script.run
+        .withSuccessHandler(function(key) {
+          if (key) {
+            apiKeyInput.value = key;
+            updateControls();
+          }
+        })
+        .settingsService.getApiKey();
+
+      google.script.run
+        .withSuccessHandler(function(model) {
+          updateModelDisplay(model);
+        })
+        .settingsService.getModel();
 
       saveApiKeyBtn.addEventListener('click', function() {
         if (!validateApiKey()) { setStatus('API Key cannot be empty', true); return; }
@@ -108,6 +160,15 @@
               modelDropdown.disabled = false;
               saveModelBtn.disabled = false;
               setStatus('Models fetched successfully');
+
+              google.script.run
+                .withSuccessHandler(function(model) {
+                  if (model) {
+                    modelDropdown.value = model;
+                    updateModelDisplay(model);
+                  }
+                })
+                .settingsService.getModel();
             }
             updateControls();
           })
@@ -122,22 +183,14 @@
       saveModelBtn.addEventListener('click', function() {
         var selected = modelDropdown.value;
         if (!selected) { setStatus('Please select a model', true); return; }
-        saveModelBtn.disabled = true;
-        setLoading(true);
-        setStatus('');
-        google.script.run
-          .withSuccessHandler(function() {
-            setLoading(false);
-            setStatus('Model saved successfully');
-            alert('Model saved successfully');
-            saveModelBtn.disabled = false;
-          })
-          .withFailureHandler(function(err) {
-            setLoading(false);
-            setStatus('Error saving model: ' + err.message, true);
-            saveModelBtn.disabled = false;
-          })
-          .settingsService.setModel(selected);
+        saveModel(selected);
+      });
+
+      modelDropdown.addEventListener('change', function() {
+        var selected = modelDropdown.value;
+        if (selected) {
+          saveModel(selected);
+        }
       });
     });
   </script>
