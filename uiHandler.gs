@@ -3,6 +3,7 @@ function onOpen(e) {
   ui.createMenu('SEO AI Tools')
     .addItem('Settings', 'showSettingsSidebar')
     .addToUi();
+  openWelcomeSheet();
 }
 
 function onInstall(e) {
@@ -19,6 +20,34 @@ function showSettingsSidebar() {
 
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+function openWelcomeSheet() {
+  const ss = SpreadsheetApp.getActive();
+  let sheet = ss.getSheetByName('Welcome');
+  if (!sheet) {
+    sheet = ss.insertSheet('Welcome');
+  } else {
+    sheet.clear();
+  }
+  sheet.setHiddenGridlines(true);
+  const maxRows = sheet.getMaxRows();
+  const maxCols = sheet.getMaxColumns();
+  sheet.getRange(1, 1, maxRows, maxCols)
+    .setBackground('#1a1a1a')
+    .setFontColor('#ffffff');
+  sheet.getRange('A1:D1').merge().setValue('MagicSheetPro')
+    .setFontSize(24).setFontWeight('bold')
+    .setHorizontalAlignment('center');
+  sheet.getRange('A2:D2').merge().setValue('Welcome')
+    .setFontSize(18).setFontWeight('bold')
+    .setHorizontalAlignment('center');
+  sheet.getRange('A3:D3').merge().setValue('Let the magic begin!')
+    .setHorizontalAlignment('center');
+  sheet.getRange('A4:D4').merge()
+    .setValue('19 functions ready to go! Add OpenAI key to sidebar to get started and select your favorite model!')
+    .setHorizontalAlignment('center');
+  sheet.activate();
 }
 
 function openFunctionReferenceSheet() {
