@@ -1,7 +1,7 @@
 function _validateUrl(url) {
   if (!url || typeof url !== 'string') throw new Error('URL must be a non-empty string');
   const trimmed = url.trim();
-  if (!domainService.isValidUrl(trimmed)) throw new Error('Invalid URL: ' + trimmed);
+  if (!isValidUrl(trimmed)) throw new Error('Invalid URL: ' + trimmed);
   return trimmed;
 }
 
@@ -104,7 +104,7 @@ function pagedata() {
   const reqIndices = [];
   flat.forEach((u, i) => {
     const trimmed = u.trim();
-    if (domainService.isValidUrl(trimmed)) {
+    if (isValidUrl(trimmed)) {
       reqs.push({ url: trimmed, muteHttpExceptions: true });
       reqIndices.push(i);
       rows[i] = null;

@@ -2,7 +2,7 @@ function fetchHtml(url) {
   if (typeof url !== 'string' || !url) {
     throw new Error('fetchHtml: Missing URL');
   }
-  if (!domainService.isValidUrl(url)) {
+  if (!isValidUrl(url)) {
     throw new Error('fetchHtml: Invalid URL: ' + url);
   }
   try {
