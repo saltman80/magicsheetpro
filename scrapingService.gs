@@ -138,3 +138,10 @@ function pagedata() {
   }
   return rows;
 }
+
+var scrapingService = {
+  visit: visit,
+  serp: serp,
+  bulkserp: bulkserp,
+  pagedata: pagedata
+};

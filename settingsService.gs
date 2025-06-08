@@ -32,3 +32,10 @@ function getModel() {
   var modelId = utilityService.getProperty(OPENAI_MODEL_ID_PROP);
   return modelId ? modelId.trim() : null;
 }
+
+var settingsService = {
+  setApiKey: setApiKey,
+  getApiKey: getApiKey,
+  setModel: setModel,
+  getModel: getModel
+};

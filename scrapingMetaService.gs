@@ -77,3 +77,10 @@ function getH2(url) {
   }
   return matches;
 }
+
+var scrapingMetaService = {
+  getMetaTitle: getMetaTitle,
+  getMetaDescription: getMetaDescription,
+  getH1: getH1,
+  getH2: getH2
+};

@@ -153,3 +153,12 @@ function checkDomainSSL(url) {
     return false;
   }
 }
+
+var domainService = {
+  normalizeUrl: normalizeUrl,
+  isValidUrl: isValidUrl,
+  domainCheck: domainCheck,
+  getHttpStatus: getHttpStatus,
+  getDomainResponseTime: getDomainResponseTime,
+  checkDomainSSL: checkDomainSSL
+};

@@ -77,3 +77,10 @@ function saveSelectedModel(id) {
   settingsService.setModel(id);
   return 'Model saved';
 }
+
+var modelService = {
+  fetchOpenAIModels: fetchOpenAIModels,
+  listModelIds: listModelIds,
+  getAvailableModels: getAvailableModels,
+  saveSelectedModel: saveSelectedModel
+};

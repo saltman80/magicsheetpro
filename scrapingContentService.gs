@@ -114,12 +114,21 @@ function getSelector(url, selector) {
     );
     results = html.match(regex) || [];
   } else {
-    if (!/^[A-Za-z][A-Za-z0-9-]*$/.test(selector)) {
-      throw new Error('getSelector: Invalid tag selector: ' + selector);
-    }
-    var tag = selector.toLowerCase();
-    regex = new RegExp('<' + tag + '\\b[^>]*>[\\s\\S]*?<\\/' + tag + '>', 'gi');
-    results = html.match(regex) || [];
+  if (!/^[A-Za-z][A-Za-z0-9-]*$/.test(selector)) {
+    throw new Error('getSelector: Invalid tag selector: ' + selector);
+  }
+  var tag = selector.toLowerCase();
+  regex = new RegExp('<' + tag + '\\b[^>]*>[\\s\\S]*?<\\/' + tag + '>', 'gi');
+  results = html.match(regex) || [];
   }
   return results;
 }
+
+var scrapingContentService = {
+  fetchHtml: fetchHtml,
+  escapeRegex: escapeRegex,
+  getHeadings: getHeadings,
+  getp: getp,
+  getImg: getImg,
+  getSelector: getSelector
+};
