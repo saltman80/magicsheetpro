@@ -22,7 +22,7 @@ function updateProperty(key, value) {
   if (valueStr.trim() === '') {
     throw new Error('Invalid property value: cannot be an empty string.');
   }
-  PropertiesService.getUserProperties().setProperty(key, valueStr);
+  PropertiesService.getScriptProperties().setProperty(key, valueStr);
 }
 
 /**
@@ -40,7 +40,7 @@ function getProperty(key) {
   if (key === '') {
     throw new Error('Invalid property key: cannot be empty.');
   }
-  return PropertiesService.getUserProperties().getProperty(key);
+  return PropertiesService.getScriptProperties().getProperty(key);
 }
 
 /**
@@ -57,7 +57,7 @@ function removeProperty(key) {
   if (key === '') {
     throw new Error('Invalid property key: cannot be empty.');
   }
-  PropertiesService.getUserProperties().deleteProperty(key);
+  PropertiesService.getScriptProperties().deleteProperty(key);
 }
 
 /**

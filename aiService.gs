@@ -63,18 +63,22 @@ function AI_OpenAI() {
   throw new Error('OpenAI call failed after multiple attempts: ' + lastError.message);
 }
 
+function AI() {
+  return AI_OpenAI.apply(null, arguments);
+}
+
 function aitext(prompt) {
   if (!prompt || typeof prompt !== 'string') {
     throw new Error('aitext requires a non-empty prompt string.');
   }
-  return AI_OpenAI(prompt);
+  return AI(prompt);
 }
 
 function ailist(prompt) {
   if (!prompt || typeof prompt !== 'string') {
     throw new Error('ailist requires a non-empty prompt string.');
   }
-  var txt = AI_OpenAI('List items:\n' + prompt);
+  var txt = AI('List items:\n' + prompt);
   if (!txt || typeof txt !== 'string') {
     return [];
   }
@@ -89,7 +93,7 @@ function ailisth(prompt) {
   if (!prompt || typeof prompt !== 'string') {
     throw new Error('ailisth requires a non-empty prompt string.');
   }
-  var txt = AI_OpenAI('Horizontal list:\n' + prompt);
+  var txt = AI('Horizontal list:\n' + prompt);
   if (!txt || typeof txt !== 'string') {
     return [[]];
   }

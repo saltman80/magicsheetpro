@@ -129,6 +129,7 @@
           .withSuccessHandler(function() {
             setLoading(false);
             setStatus('Model saved successfully');
+            alert('Model saved successfully');
             saveModelBtn.disabled = false;
           })
           .withFailureHandler(function(err) {
